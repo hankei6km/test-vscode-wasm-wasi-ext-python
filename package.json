@@ -1,5 +1,5 @@
 {
-  "name": "test-vscode-wasm-wasi-ext-hello",
+  "name": "test-vscode-wasm-wasi-ext-python",
   "version": "0.0.1",
   "description": "",
   "keywords": [],
@@ -13,16 +13,21 @@
   "contributes": {
     "webShellMountPoints": [
       {
-        "mountPoint": "/usr/bin/hello",
-        "command": "wasm-wasi-hello.webshell"
+        "mountPoint": "/usr/local/lib/python3.12",
+        "path": "wasm/lib"
+      },
+      {
+        "mountPoint": "/usr/bin/python",
+        "command": "wasm-wasi-python.webshell"
       }
     ]
   },
   "scripts": {
     "build": "npm run compile",
-    "build:rust": "cargo build --target wasm32-wasi --release && cp target/wasm32-wasi/release/rust-hello.wasm wasm/bin/hello.wasm",
     "compile": "node esbuild.config.mjs",
+    "setup:python": "npm run clean:python && bash scripts/setup-python.sh",
     "clean": "rimraf out/",
+    "clean:python": "rimraf wasm/",
     "serve": "serve --cors -l 5000 --ssl-cert $HOME/certs/localhost.pem --ssl-key $HOME/certs/localhost-key.pem -c ./configs/serve.json .",
     "serve:http": "serve --cors -l 5000"
   },

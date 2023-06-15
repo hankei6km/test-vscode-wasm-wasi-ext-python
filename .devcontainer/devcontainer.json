@@ -6,8 +6,7 @@
       "username": "vscode"
     },
     "ghcr.io/devcontainers/features/github-cli:1": {},
-    "ghcr.io/devcontainers/features/node:1": {},
-    "ghcr.io/devcontainers/features/rust:1": {}
+    "ghcr.io/devcontainers/features/node:1": {}
   },
 
   "runArgs": [],
@@ -15,17 +14,10 @@
   "remoteUser": "vscode",
   "remoteEnv": {},
   "postStartCommand": [],
-  "postCreateCommand": "rustup target add wasm32-wasi",
+  "postCreateCommand": [],
   "customizations": {
     "vscode": {
-      "extensions": [
-        "esbenp.prettier-vscode",
-        "vadimcn.vscode-lldb",
-        "mutantdino.resourcemonitor",
-        "rust-lang.rust-analyzer",
-        "tamasfe.even-better-toml",
-        "serayuzgur.crates"
-      ],
+      "extensions": ["esbenp.prettier-vscode"],
       "settings": {
         "editor.defaultFormatter": "esbenp.prettier-vscode",
         "[typescript]": {
