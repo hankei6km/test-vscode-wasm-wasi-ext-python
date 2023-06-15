@@ -6,29 +6,56 @@ export async function activate(context: ExtensionContext) {
 
   // https://github.com/microsoft/vscode-wasm/blob/main/testbeds/python/extension.ts
   commands.registerCommand(
-    'wasm-wasi-hello.webshell',
+    'wasm-wasi-python.webshell',
     async (
       _command: string,
       args: string[],
-      _cwd: string,
+      cwd: string,
       stdio: Stdio,
       rootFileSystem: RootFileSystem
     ): Promise<number> => {
+      // WASI doesn't support the concept of an initial working directory.
+      // So we need to make file paths absolute.
+      // See https://github.com/WebAssembly/wasi-filesystem/issues/24
+      const optionsWithArgs = new Set([
+        '-c',
+        '-m',
+        '-W',
+        '-X',
+        '--check-hash-based-pycs'
+      ])
+      for (let i = 0; i < args.length; i++) {
+        const arg = args[i]
+        if (optionsWithArgs.has(arg)) {
+          const next = args[i + 1]
+          if (next !== undefined && !next.startsWith('-')) {
+            i++
+            continue
+          }
+        } else if (arg.startsWith('-')) {
+          continue
+        } else if (!arg.startsWith('/')) {
+          args[i] = `${cwd}/${arg}`
+        }
+      }
       const options: ProcessOptions = {
         stdio,
         rootFileSystem,
-        args: [...args],
+        env: {
+          PYTHONPATH: '/workspace'
+        },
+        args: ['-B', '-X', 'utf8', ...args],
         trace: true
       }
       const filename = Uri.joinPath(
         context.extensionUri,
         'wasm',
         'bin',
-        'hello.wasm'
+        'python.wasm'
       )
       const bits = await workspace.fs.readFile(filename)
       const module = await WebAssembly.compile(bits)
-      const process = await wasm.createProcess('hello', module, options)
+      const process = await wasm.createProcess('python', module, options)
       const result = await process.run()
       return result
     }
